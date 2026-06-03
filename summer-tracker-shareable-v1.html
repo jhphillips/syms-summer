@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Summer Brain HQ</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #0F172A;
+  --card:     #1E293B;
+  --card2:    #263548;
+  --border:   #334155;
+  --text:     #F1F5F9;
+  --muted:    #94A3B8;
+  --amber:    #F59E0B;
+  --amber-d:  #92400E;
+  --amber-bg: #1C1608;
+  --violet:   #8B5CF6;
+  --violet-d: #4C1D95;
+  --violet-bg:#130D24;
+  --emerald:  #10B981;
+  --emerald-d:#064E3B;
+  --emerald-bg:#061A12;
+  --coral:    #F97316;
+  --sky:      #38BDF8;
+  --r:        18px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);min-height:100vh;color:var(--text);}
+
+/* SETUP */
+#setupScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:30px 20px;background:var(--bg);}
+.setup-card{background:var(--card);border-radius:24px;padding:40px 36px;max-width:480px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,.5);text-align:center;border:1px solid var(--border);}
+.setup-sun{font-size:3.5rem;display:block;animation:bob 2s ease-in-out infinite;}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.setup-title{font-family:'Fredoka One',cursive;font-size:2.2rem;color:var(--coral);margin:12px 0 4px;}
+.setup-sub{font-size:.95rem;color:var(--muted);font-weight:600;margin-bottom:32px;}
+.setup-field{margin-bottom:20px;text-align:left;}
+.setup-label{display:block;font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:8px;}
+.setup-input{width:100%;padding:14px 18px;border:2px solid var(--border);border-radius:12px;font-family:'Fredoka One',cursive;font-size:1.2rem;color:var(--text);background:var(--card2);outline:none;transition:border-color .2s,box-shadow .2s;}
+.setup-input:focus{border-color:var(--sky);box-shadow:0 0 0 3px rgba(56,189,248,.15);}
+.grade-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.grade-btn{padding:12px 6px;border:2px solid var(--border);border-radius:10px;background:var(--card2);font-family:'Fredoka One',cursive;font-size:1rem;color:var(--muted);cursor:pointer;transition:all .15s;}
+.grade-btn:hover{border-color:var(--sky);color:var(--sky);}
+.grade-btn.sel{border-color:var(--coral);background:rgba(249,115,22,.15);color:var(--coral);}
+.avatar-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;}
+.avatar-btn{aspect-ratio:1;border:2px solid var(--border);border-radius:12px;background:var(--card2);font-size:1.6rem;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;}
+.avatar-btn:hover{border-color:var(--sky);transform:scale(1.08);}
+.avatar-btn.sel{border-color:var(--amber);background:rgba(245,158,11,.15);transform:scale(1.12);}
+.setup-go{width:100%;padding:16px;background:linear-gradient(135deg,var(--coral),#EA580C);color:white;border:none;border-radius:14px;font-family:'Fredoka One',cursive;font-size:1.3rem;cursor:pointer;margin-top:10px;transition:transform .15s,box-shadow .15s;box-shadow:0 6px 24px rgba(249,115,22,.4);}
+.setup-go:hover{transform:translateY(-2px);box-shadow:0 10px 32px rgba(249,115,22,.5);}
+.setup-go:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none;}
+.setup-credit{margin-top:20px;font-size:.72rem;color:var(--muted);font-weight:700;line-height:1.6;}
+
+/* MAIN */
+#mainApp{display:none;}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes pop{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes bounceIn{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes slideUp{from{transform:translateY(28px) scale(.94);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+
+header{text-align:center;padding:40px 20px 20px;position:relative;}
+.hdr-avatar{font-size:3rem;display:block;animation:spin 8s linear infinite;}
+h1{font-family:'Fredoka One',cursive;font-size:clamp(2rem,6vw,3.2rem);color:var(--text);line-height:1.1;margin:10px 0 4px;}
+.hdr-sub{font-size:1rem;color:var(--muted);font-weight:700;}
+.hdr-badge{display:inline-block;background:rgba(56,189,248,.15);color:var(--sky);border:1px solid rgba(56,189,248,.3);font-size:.72rem;font-weight:800;padding:4px 14px;border-radius:20px;margin-top:10px;letter-spacing:.5px;}
+.reset-btn{position:absolute;top:20px;right:20px;background:none;border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:.72rem;font-weight:800;color:var(--muted);cursor:pointer;transition:all .2s;}
+.reset-btn:hover{border-color:var(--coral);color:var(--coral);}
+
+/* XP BANNER */
+.xp-banner{max-width:700px;margin:16px auto;padding:0 20px;}
+.streak-box{background:linear-gradient(135deg,#F97316,#DC2626);border-radius:var(--r);padding:20px 24px;display:flex;align-items:center;gap:16px;box-shadow:0 8px 32px rgba(249,115,22,.3);}
+.s-fire{font-size:2.8rem;}
+.s-info{flex:1;}
+.s-label{font-size:.72rem;font-weight:800;color:rgba(255,255,255,.7);text-transform:uppercase;letter-spacing:1.5px;}
+.s-count{font-family:'Fredoka One',cursive;font-size:2.4rem;color:white;line-height:1;}
+.xp-right{text-align:right;}
+.xp-label{font-size:.72rem;color:rgba(255,255,255,.7);font-weight:800;text-transform:uppercase;letter-spacing:1px;}
+.xp-val{font-family:'Fredoka One',cursive;font-size:2rem;color:white;}
+
+/* GRID */
+.grid{max-width:700px;margin:0 auto;padding:10px 20px 60px;display:grid;gap:16px;}
+
+/* CARDS */
+.card{background:var(--card);border-radius:var(--r);padding:22px;border:1px solid var(--border);transition:transform .2s,box-shadow .2s;}
+.card:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(0,0,0,.3);}
+.card-hdr{display:flex;align-items:center;gap:14px;margin-bottom:18px;}
+.card-ico{width:50px;height:50px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;flex-shrink:0;}
+.card-title{font-family:'Fredoka One',cursive;font-size:1.35rem;}
+.card-tip{font-size:.78rem;color:var(--muted);font-weight:600;line-height:1.5;margin-top:2px;}
+
+/* SECTION COLORS */
+.card-r .card-ico{background:var(--amber-bg);} .card-r .card-title{color:var(--amber);}
+.card-r{border-top:3px solid var(--amber);}
+.card-w .card-ico{background:var(--violet-bg);} .card-w .card-title{color:var(--violet);}
+.card-w{border-top:3px solid var(--violet);}
+.card-m .card-ico{background:var(--emerald-bg);} .card-m .card-title{color:var(--emerald);}
+.card-m{border-top:3px solid var(--emerald);}
+
+/* LOG INPUTS */
+.log-row{display:flex;gap:10px;margin-bottom:8px;}
+.log-input{flex:1;padding:12px 16px;border:2px solid var(--border);border-radius:12px;font-family:'Nunito',sans-serif;font-size:.95rem;font-weight:700;color:var(--text);background:var(--card2);outline:none;transition:border-color .2s;}
+.log-input:focus{border-color:var(--sky);}
+.log-input::placeholder{color:var(--muted);}
+.log-btn{padding:12px 20px;border:none;border-radius:12px;font-family:'Fredoka One',cursive;font-size:1rem;cursor:pointer;transition:transform .15s,opacity .15s;white-space:nowrap;}
+.log-btn:hover{opacity:.85;transform:scale(1.04);}
+.log-btn:active{transform:scale(.97);}
+.btn-r{background:var(--amber);color:#1C1608;}
+.btn-w{background:var(--violet);color:white;}
+.btn-m{background:var(--emerald);color:#061A12;}
+
+/* IDEA TRIGGER */
+.idea-trigger{background:none;border:none;cursor:pointer;font-family:'Nunito',sans-serif;font-size:.78rem;font-weight:800;color:var(--muted);padding:2px 0 10px;display:inline-flex;align-items:center;gap:5px;transition:color .2s;}
+.idea-trigger:hover{color:var(--sky);}
+
+/* IDEA PANEL */
+.idea-panel{display:none;background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:12px;}
+.idea-panel.open{display:block;animation:pop .25s cubic-bezier(.175,.885,.32,1.275);}
+.idea-panel-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.idea-panel-title{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);}
+.idea-more{background:none;border:none;cursor:pointer;font-size:.8rem;font-weight:800;color:var(--sky);padding:0;font-family:'Nunito',sans-serif;}
+.idea-chips{display:flex;flex-direction:column;gap:7px;}
+.idea-chip{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;font-size:.875rem;font-weight:700;color:var(--text);cursor:pointer;text-align:left;transition:border-color .15s,background .15s,transform .1s;display:flex;align-items:center;line-height:1.4;width:100%;gap:8px;}
+.idea-chip:hover{border-color:var(--sky);background:rgba(56,189,248,.08);transform:translateX(4px);}
+.idea-chip-arrow{font-size:.75rem;color:var(--muted);flex-shrink:0;margin-left:auto;}
+
+/* ENTRIES */
+.entries{display:flex;flex-direction:column;gap:8px;max-height:220px;overflow-y:auto;padding-right:4px;}
+.entries::-webkit-scrollbar{width:4px;}
+.entries::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+.entry{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;background:var(--card2);border-radius:10px;font-size:.875rem;font-weight:700;animation:pop .3s cubic-bezier(.175,.885,.32,1.275);border:1px solid var(--border);}
+.entry-date{color:var(--muted);font-size:.72rem;font-weight:600;flex-shrink:0;padding-top:2px;}
+.entry-body{flex:1;}
+.entry-text{color:var(--text);}
+.entry-followup{color:var(--violet);font-size:.72rem;margin-top:3px;font-weight:600;}
+.entry-xp{font-family:'Fredoka One',cursive;font-size:.85rem;flex-shrink:0;}
+.xr{color:var(--amber)}.xw{color:var(--violet)}.xm{color:var(--emerald)}
+.entry-del{background:none;border:none;cursor:pointer;color:var(--border);font-size:1.1rem;padding:0 2px;transition:color .2s;flex-shrink:0;line-height:1;}
+.entry-del:hover{color:var(--coral);}
+.empty{text-align:center;color:var(--muted);font-size:.85rem;padding:20px;font-style:italic;}
+
+/* EC BARS */
+.ec-wrap{margin-top:12px;}
+.ec-lbl{display:flex;justify-content:space-between;font-size:.72rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
+.ec-track{height:12px;background:rgba(255,255,255,.06);border-radius:99px;overflow:hidden;}
+.ec-fill-r{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--amber),var(--coral));transition:width .5s cubic-bezier(.34,1.56,.64,1);min-width:4px;}
+.ec-fill-m{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--emerald),var(--sky));transition:width .5s cubic-bezier(.34,1.56,.64,1);min-width:4px;}
+
+/* WEEK */
+.week-lbl{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:10px;}
+.week-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;}
+.day{aspect-ratio:1;border-radius:10px;background:var(--card2);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:.6rem;font-weight:800;color:var(--muted);text-transform:uppercase;gap:3px;cursor:pointer;transition:transform .15s,background .15s;border:1px solid var(--border);}
+.day:hover{transform:scale(1.08);border-color:var(--sky);}
+.day.on{background:rgba(16,185,129,.15);border-color:var(--emerald);color:var(--emerald);}
+.day.td{box-shadow:0 0 0 2px var(--sky);}
+.day-dot{font-size:1.1rem;}
+
+/* BADGES */
+.badges-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:10px;margin-top:4px;}
+.badge{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 6px;border-radius:12px;background:var(--card2);text-align:center;transition:transform .2s;border:1px solid var(--border);}
+.badge.locked{opacity:.3;filter:grayscale(1);}
+.badge:not(.locked):hover{transform:scale(1.06);}
+.badge-ico{font-size:1.8rem;}
+.badge-name{font-size:.65rem;font-weight:800;color:var(--text);line-height:1.2;}
+.badge-req{font-size:.58rem;color:var(--muted);}
+
+/* NOTES */
+.notes-ta{width:100%;min-height:80px;padding:12px 16px;border:2px solid var(--border);border-radius:12px;font-family:'Nunito',sans-serif;font-size:.9rem;font-weight:600;color:var(--text);background:var(--card2);resize:vertical;outline:none;transition:border-color .2s;line-height:1.5;}
+.notes-ta:focus{border-color:var(--sky);}
+.notes-ta::placeholder{color:var(--muted);}
+.notes-save{margin-top:8px;padding:9px 22px;background:var(--sky);color:#0C1A2A;border:none;border-radius:10px;font-family:'Fredoka One',cursive;font-size:.95rem;cursor:pointer;font-weight:700;transition:opacity .2s,transform .15s;}
+.notes-save:hover{opacity:.85;transform:scale(1.03);}
+.saved-note{margin-top:10px;padding:10px 14px;background:rgba(56,189,248,.1);border:1px solid rgba(56,189,248,.2);border-radius:10px;font-size:.82rem;font-weight:600;color:var(--sky);white-space:pre-wrap;display:none;}
+
+footer{text-align:center;padding:20px;color:var(--muted);font-size:.72rem;font-weight:700;}
+
+/* MODALS */
+.backdrop{position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(6px);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;}
+.modal{background:var(--card);border-radius:22px;padding:32px 28px 28px;max-width:430px;width:100%;box-shadow:0 32px 80px rgba(0,0,0,.6);animation:slideUp .35s cubic-bezier(.34,1.56,.64,1);border:1px solid var(--border);}
+
+/* GATE */
+#gateModal .modal{text-align:center;}
+.gate-avatar{font-size:3rem;display:block;margin-bottom:8px;animation:bob 2s ease-in-out infinite;}
+.gate-greet{font-family:'Fredoka One',cursive;font-size:1.5rem;color:var(--text);margin-bottom:4px;}
+.gate-sub{font-size:.82rem;color:var(--muted);font-weight:700;margin-bottom:22px;}
+.gate-box{background:linear-gradient(135deg,#020817,#0F172A);border:1px solid var(--border);border-radius:18px;padding:28px 20px;margin-bottom:18px;position:relative;overflow:hidden;}
+.gate-box::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 70% 30%,rgba(245,158,11,.12),transparent 60%);}
+.gate-box-lbl{font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:10px;}
+.gate-prob{font-family:'Fredoka One',cursive;font-size:2.8rem;color:var(--text);line-height:1.1;position:relative;}
+.gate-hint{font-size:.72rem;color:var(--muted);font-weight:700;margin-top:8px;position:relative;}
+.gate-fb{min-height:26px;font-family:'Fredoka One',cursive;font-size:1rem;margin-bottom:8px;color:var(--muted);}
+.gate-fb.wrong{color:var(--coral);}
+.gate-input-row{display:flex;gap:10px;margin-bottom:10px;}
+.gate-input{flex:1;padding:14px 18px;border:2px solid var(--border);border-radius:12px;font-family:'Fredoka One',cursive;font-size:1.6rem;color:var(--text);background:var(--card2);text-align:center;outline:none;transition:border-color .2s,box-shadow .2s;}
+.gate-input:focus{border-color:var(--sky);box-shadow:0 0 0 3px rgba(56,189,248,.15);}
+.gate-input.bad{border-color:var(--coral);animation:shake .4s;}
+.gate-input.good{border-color:var(--emerald);}
+.gate-check{padding:14px 22px;background:linear-gradient(135deg,var(--sky),#0EA5E9);color:#0C1A2A;border:none;border-radius:12px;font-family:'Fredoka One',cursive;font-size:1.1rem;cursor:pointer;font-weight:700;transition:transform .15s;white-space:nowrap;}
+.gate-check:hover{transform:translateY(-2px);}
+.gate-skip{margin-top:12px;font-size:.75rem;color:var(--muted);font-weight:700;cursor:pointer;text-decoration:underline;display:none;}
+.gate-skip:hover{color:var(--text);}
+.gate-success{display:none;text-align:center;}
+.gate-success-ico{font-size:3rem;display:block;animation:bounceIn .5s cubic-bezier(.34,1.56,.64,1);}
+.gate-success-title{font-family:'Fredoka One',cursive;font-size:1.6rem;color:var(--emerald);margin:10px 0 4px;}
+.gate-xp-pill{display:inline-block;background:linear-gradient(135deg,var(--amber),var(--coral));color:white;font-family:'Fredoka One',cursive;font-size:1rem;padding:6px 22px;border-radius:50px;margin:8px 0 20px;box-shadow:0 4px 16px rgba(245,158,11,.35);}
+.gate-warns{display:flex;flex-direction:column;gap:8px;margin-bottom:20px;text-align:left;}
+.gate-warn{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:10px;}
+.gw1{background:rgba(245,158,11,.1);border-left:3px solid var(--amber);}
+.gw2{background:rgba(56,189,248,.1);border-left:3px solid var(--sky);}
+.gw3{background:rgba(16,185,129,.1);border-left:3px solid var(--emerald);}
+.gate-warn-ico{font-size:1.1rem;flex-shrink:0;}
+.gate-warn-txt{font-size:.76rem;font-weight:700;color:var(--muted);line-height:1.5;}
+.gate-warn-txt strong{color:var(--text);}
+.gate-enter{width:100%;padding:15px;background:linear-gradient(135deg,var(--coral),#EA580C);color:white;border:none;border-radius:13px;font-family:'Fredoka One',cursive;font-size:1.2rem;cursor:pointer;box-shadow:0 6px 24px rgba(249,115,22,.4);transition:transform .15s;}
+.gate-enter:hover{transform:translateY(-2px);}
+
+/* FOLLOW-UP */
+#followModal .modal{text-align:center;}
+.fu-ico{font-size:2.5rem;display:block;margin-bottom:8px;animation:bounceIn .4s cubic-bezier(.34,1.56,.64,1);}
+.fu-title{font-family:'Fredoka One',cursive;font-size:1.4rem;color:var(--text);margin-bottom:4px;}
+.fu-sub{font-size:.8rem;color:var(--muted);font-weight:700;margin-bottom:18px;}
+.fu-q{background:linear-gradient(135deg,#020817,#0F172A);border:1px solid var(--border);border-radius:14px;padding:18px 20px;margin-bottom:16px;font-family:'Fredoka One',cursive;font-size:1.05rem;color:var(--text);line-height:1.45;}
+.fu-input{width:100%;padding:12px 16px;border:2px solid var(--border);border-radius:12px;font-family:'Nunito',sans-serif;font-size:.95rem;font-weight:700;color:var(--text);background:var(--card2);outline:none;transition:border-color .2s;margin-bottom:14px;resize:none;}
+.fu-input:focus{border-color:var(--violet);box-shadow:0 0 0 3px rgba(139,92,246,.15);}
+.fu-input::placeholder{color:var(--muted);}
+.fu-btns{display:flex;gap:10px;}
+.fu-submit{flex:1;padding:13px;background:linear-gradient(135deg,var(--violet),#6D28D9);color:white;border:none;border-radius:12px;font-family:'Fredoka One',cursive;font-size:1rem;cursor:pointer;box-shadow:0 5px 18px rgba(139,92,246,.35);transition:transform .15s;}
+.fu-submit:hover{transform:translateY(-2px);}
+.fu-skip{padding:13px 18px;background:var(--card2);color:var(--muted);border:1px solid var(--border);border-radius:12px;font-family:'Fredoka One',cursive;font-size:1rem;cursor:pointer;transition:background .15s;}
+.fu-skip:hover{background:var(--border);}
+
+/* TOAST */
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--card);color:var(--text);border:1px solid var(--border);padding:12px 24px;border-radius:50px;font-family:'Fredoka One',cursive;font-size:1rem;z-index:1100;transition:transform .4s cubic-bezier(.34,1.56,.64,1);pointer-events:none;white-space:nowrap;box-shadow:0 8px 32px rgba(0,0,0,.4);}
+.toast.show{transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+
+<div id="setupScreen">
+  <div class="setup-card">
+    <span class="setup-sun">&#9728;&#65039;</span>
+    <div class="setup-title">Summer Brain HQ</div>
+    <div class="setup-sub">Set this up for your kiddo in 30 seconds!</div>
+    <div class="setup-field">
+      <label class="setup-label">Child's first name</label>
+      <input class="setup-input" id="sName" type="text" placeholder="First name" maxlength="20" autocomplete="off">
+    </div>
+    <div class="setup-field">
+      <label class="setup-label">Going into what grade?</label>
+      <div class="grade-grid">
+        <button class="grade-btn">K</button>
+        <button class="grade-btn">1st</button>
+        <button class="grade-btn">2nd</button>
+        <button class="grade-btn">3rd</button>
+        <button class="grade-btn">4th</button>
+        <button class="grade-btn">5th</button>
+        <button class="grade-btn">6th</button>
+        <button class="grade-btn">7th</button>
+      </div>
+    </div>
+    <div class="setup-field">
+      <label class="setup-label">Pick an avatar</label>
+      <div class="avatar-grid">
+        <button class="avatar-btn">&#129409;</button>
+        <button class="avatar-btn">&#128025;</button>
+        <button class="avatar-btn">&#129418;</button>
+        <button class="avatar-btn">&#128056;</button>
+        <button class="avatar-btn">&#128044;</button>
+        <button class="avatar-btn">&#129412;</button>
+        <button class="avatar-btn">&#128060;</button>
+        <button class="avatar-btn">&#129430;</button>
+        <button class="avatar-btn">&#128047;</button>
+        <button class="avatar-btn">&#128640;</button>
+        <button class="avatar-btn">&#129425;</button>
+        <button class="avatar-btn">&#127758;</button>
+      </div>
+    </div>
+    <button class="setup-go" id="goBtn" disabled>Let's Go! &#128640;</button>
+    <div class="setup-credit">Inspired by Miss Degnan, Mr. Dobbins &amp; Mrs. Stankevicius<br>Data stays on your device &mdash; nothing is shared.</div>
+  </div>
+</div>
+
+<div id="mainApp">
+  <header>
+    <span class="hdr-avatar" id="hdrAvatar">&#127775;</span>
+    <h1 id="hdrTitle">Summer Brain HQ</h1>
+    <p class="hdr-sub" id="hdrSub"></p>
+    <div class="hdr-badge">Miss Degnan &middot; Mr. Dobbins &middot; Mrs. Stankevicius</div>
+    <button class="reset-btn" id="resetBtn">&#9881; Reset</button>
+  </header>
+
+  <div class="xp-banner">
+    <div class="streak-box">
+      <div class="s-fire">&#128293;</div>
+      <div class="s-info"><div class="s-label">Day Streak</div><div class="s-count" id="streakEl">0</div></div>
+      <div class="xp-right"><div class="xp-label">Total XP</div><div class="xp-val" id="xpEl">0</div></div>
+    </div>
+  </div>
+
+  <div class="grid">
+
+    <div class="card card-r">
+      <div class="card-hdr"><div class="card-ico">&#128218;</div><div><div class="card-title">Reading Log</div><div class="card-tip">15&ndash;20 min/day &middot; books, graphic novels, magazines, audiobooks &middot; +10 XP</div></div></div>
+      <div class="log-row">
+        <input class="log-input" id="rInput" placeholder="What did you read today?" maxlength="80">
+        <button class="log-btn btn-r" id="rBtn">+ Log It</button>
+      </div>
+      <button class="idea-trigger" id="rTrigger">&#128161; Need ideas?</button>
+      <div class="idea-panel" id="rPanel">
+        <div class="idea-panel-hdr"><span class="idea-panel-title">Reading ideas &#128218;</span><button class="idea-more" id="rMore">&#128260; More</button></div>
+        <div class="idea-chips" id="rChips"></div>
+      </div>
+      <div class="entries" id="rList"><div class="empty">No entries yet &mdash; go read something cool! &#128214;</div></div>
+      <div class="ec-wrap"><div class="ec-lbl"><span>Extra Credit Goal</span><span id="rEC">0 / 20</span></div><div class="ec-track"><div class="ec-fill-r" id="rBar" style="width:0%"></div></div></div>
+    </div>
+
+    <div class="card card-w">
+      <div class="card-hdr"><div class="card-ico">&#9999;&#65039;</div><div><div class="card-title">Writing Log</div><div class="card-tip">Journals, postcards, stories, letters &mdash; write anything! &middot; +10 XP</div></div></div>
+      <div class="log-row">
+        <input class="log-input" id="wInput" placeholder="What did you write today?" maxlength="80">
+        <button class="log-btn btn-w" id="wBtn">+ Log It</button>
+      </div>
+      <button class="idea-trigger" id="wTrigger">&#128161; Need ideas?</button>
+      <div class="idea-panel" id="wPanel">
+        <div class="idea-panel-hdr"><span class="idea-panel-title">Writing ideas &#9999;&#65039;</span><button class="idea-more" id="wMore">&#128260; More</button></div>
+        <div class="idea-chips" id="wChips"></div>
+      </div>
+      <div class="entries" id="wList"><div class="empty">No entries yet &mdash; grab a pencil! &#9999;&#65039;</div></div>
+    </div>
+
+    <div class="card card-m">
+      <div class="card-hdr"><div class="card-ico">&#128290;</div><div><div class="card-title">Math &amp; Fact Fluency Log</div><div class="card-tip">Grocery math, cooking, card games, board games &mdash; all of it! &middot; +10 XP</div></div></div>
+      <div class="log-row">
+        <input class="log-input" id="mInput" placeholder="What math did you do today?" maxlength="80">
+        <button class="log-btn btn-m" id="mBtn">+ Log It</button>
+      </div>
+      <button class="idea-trigger" id="mTrigger">&#128161; Need ideas?</button>
+      <div class="idea-panel" id="mPanel">
+        <div class="idea-panel-hdr"><span class="idea-panel-title">Math ideas &#128290;</span><button class="idea-more" id="mMore">&#128260; More</button></div>
+        <div class="idea-chips" id="mChips"></div>
+      </div>
+      <div class="entries" id="mList"><div class="empty">No entries yet &mdash; let's count something! &#129518;</div></div>
+      <div class="ec-wrap"><div class="ec-lbl"><span>Fact Fluency Goal</span><span id="mEC">0 / 20</span></div><div class="ec-track"><div class="ec-fill-m" id="mBar" style="width:0%"></div></div></div>
+    </div>
+
+    <div class="card" style="border-top:3px solid var(--coral);">
+      <div class="card-hdr"><div class="card-ico" style="background:rgba(249,115,22,.1);">&#128197;</div><div><div class="card-title" style="color:var(--coral);">This Week</div><div class="card-tip">Tap a day when your kiddo practiced something!</div></div></div>
+      <div class="week-lbl">Summer check-in</div>
+      <div class="week-grid" id="weekGrid"></div>
+    </div>
+
+    <div class="card" style="border-top:3px solid var(--amber);">
+      <div class="card-hdr"><div class="card-ico" style="background:var(--amber-bg);">&#127942;</div><div><div class="card-title" style="color:var(--amber);">Badges</div><div class="card-tip">Unlock these as you hit milestones this summer!</div></div></div>
+      <div class="badges-grid" id="badgeGrid"></div>
+    </div>
+
+    <div class="card" style="border-top:3px solid var(--sky);">
+      <div class="card-hdr"><div class="card-ico" style="background:rgba(56,189,248,.1);">&#128172;</div><div><div class="card-title" style="color:var(--sky);">Parent Notes</div><div class="card-tip">A great book? A funny moment? Something worth remembering.</div></div></div>
+      <textarea class="notes-ta" id="notesInput" placeholder="Jot down anything memorable from today..."></textarea>
+      <button class="notes-save" id="notesSaveBtn">Save Note &#128190;</button>
+      <div class="saved-note" id="savedNote"></div>
+    </div>
+
+  </div>
+  <footer id="footerEl">Keep the streak alive! &#9728;&#65039;</footer>
+</div>
+
+<div class="backdrop" id="gateModal" style="display:none;">
+  <div class="modal">
+    <div id="gateQ">
+      <span class="gate-avatar" id="gateAv">&#129504;</span>
+      <div class="gate-greet" id="gateGreet">Good morning!</div>
+      <div class="gate-sub">Solve today's warm-up to unlock your tracker &#128274;</div>
+      <div class="gate-box">
+        <div class="gate-box-lbl">Today's Problem</div>
+        <div class="gate-prob" id="gateProb"></div>
+        <div class="gate-hint" id="gateHint"></div>
+      </div>
+      <div class="gate-fb" id="gateFb"></div>
+      <div class="gate-input-row">
+        <input class="gate-input" id="gateAns" type="number" placeholder="?">
+        <button class="gate-check" id="gateCheckBtn">Check &#10003;</button>
+      </div>
+      <span class="gate-skip" id="gateSkip">Skip warm-up (returning user)</span>
+    </div>
+    <div class="gate-success" id="gateSuc">
+      <span class="gate-success-ico" id="gateIco">&#127881;</span>
+      <div class="gate-success-title" id="gateSucTitle">Correct!</div>
+      <div class="gate-xp-pill" id="gateXpPill">+5 Bonus XP</div>
+      <div class="gate-warns" id="gateWarns" style="display:none;">
+        <div class="gate-warn gw1"><span class="gate-warn-ico">&#9888;&#65039;</span><span class="gate-warn-txt"><strong>Bookmark this page &amp; don't clear site data</strong> &mdash; your child's progress lives in this browser. Clearing cache deletes everything.</span></div>
+        <div class="gate-warn gw2"><span class="gate-warn-ico">&#128241;</span><span class="gate-warn-txt"><strong>Pick one device for the summer.</strong> Data doesn't sync between devices.</span></div>
+        <div class="gate-warn gw3"><span class="gate-warn-ico">&#128274;</span><span class="gate-warn-txt"><strong>100% private</strong> &mdash; nothing leaves your device. No accounts, no tracking.</span></div>
+      </div>
+      <button class="gate-enter" id="gateEnterBtn">Let's go! &#128640;</button>
+    </div>
+  </div>
+</div>
+
+<div class="backdrop" id="followModal" style="display:none;">
+  <div class="modal">
+    <span class="fu-ico" id="fuIco">&#127775;</span>
+    <div class="fu-title" id="fuTitle">Nice work!</div>
+    <div class="fu-sub">Answer for +5 bonus XP, or skip &mdash; no pressure!</div>
+    <div class="fu-q" id="fuQ">What was your favorite part?</div>
+    <textarea class="fu-input" id="fuInput" rows="2" placeholder="Type your answer here..."></textarea>
+    <div class="fu-btns">
+      <button class="fu-submit" id="fuSubmitBtn">Answer (+5 XP) &#9889;</button>
+      <button class="fu-skip" id="fuSkipBtn">Skip</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toastEl"></div>
+
+<script>
+function rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
+function $(id){return document.getElementById(id);}
+function show(id){$(id).style.display='block';}
+function hide(id){$(id).style.display='none';}
+function flex(id){$(id).style.display='flex';}
+function dateStr(){return new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'});}
+
+function def(){return{reading:[],writing:[],math:[],streak:0,lastDay:null,weekDays:[0,0,0,0,0,0,0],notes:[],name:'',grade:'',avatar:'',bonusXP:0,gatesSolved:0};}
+function load(){try{return JSON.parse(localStorage.getItem('sbhq')||'null')||def();}catch(e){return def();}}
+function save(s){localStorage.setItem('sbhq',JSON.stringify(s));}
+function totalXP(s){return(s.reading.length+s.writing.length+s.math.length)*10+(s.bonusXP||0);}
+
+var _tt;
+function toast(msg){var el=$('toastEl');el.textContent=msg;el.classList.add('show');clearTimeout(_tt);_tt=setTimeout(function(){el.classList.remove('show');},2600);}
+
+var _grade='',_avatar='';
+document.querySelectorAll('.grade-btn').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('.grade-btn').forEach(function(b){b.classList.remove('sel');});
+    btn.classList.add('sel'); _grade=btn.textContent; checkReady();
+  });
+});
+document.querySelectorAll('.avatar-btn').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('.avatar-btn').forEach(function(b){b.classList.remove('sel');});
+    btn.classList.add('sel'); _avatar=btn.textContent; checkReady();
+  });
+});
+$('sName').addEventListener('input',checkReady);
+$('sName').addEventListener('keydown',function(e){if(e.key==='Enter'&&!$('goBtn').disabled)doLaunch();});
+$('goBtn').addEventListener('click',doLaunch);
+function checkReady(){$('goBtn').disabled=!($('sName').value.trim()&&_grade&&_avatar);}
+
+function doLaunch(){
+  var name=$('sName').value.trim();
+  if(!name||!_grade||!_avatar)return;
+  var s=def(); s.name=name; s.grade=_grade; s.avatar=_avatar;
+  save(s); hide('setupScreen'); show('mainApp');
+  applyProfile(s); render(); showGate(name,_grade,_avatar,true);
+}
+function applyProfile(s){
+  $('hdrAvatar').textContent=s.avatar||'*';
+  $('hdrTitle').textContent=s.name+"'s Summer Brain HQ";
+  $('hdrSub').textContent='Going into '+s.grade+' grade · Summer 2026';
+  document.title=s.name+"'s Summer Brain HQ";
+  $('footerEl').textContent='Keep the streak alive, '+s.name+'!';
+}
+$('resetBtn').addEventListener('click',function(){
+  if(!confirm('Start over? All logs will be cleared.'))return;
+  ['sbhq','sbhq_gate','sbhq_warned'].forEach(function(k){localStorage.removeItem(k);});
+  location.reload();
+});
+
+var _ans=null,_firstTime=false;
+var PROBS={
+  'K':function(){var a=rnd(1,5),b=rnd(1,5);return[a+' + '+b+' = ?',a+b,'Count on your fingers!'];},
+  '1st':function(){var a=rnd(1,10),b=rnd(1,10);return[a+' + '+b+' = ?',a+b,'Add the two numbers.'];},
+  '2nd':function(){if(rnd(0,1)){var a=rnd(10,30),b=rnd(5,20);return[a+' + '+b+' = ?',a+b,'Add tens first, then ones.'];}else{var a=rnd(15,30),b=rnd(1,10);return[a+' - '+b+' = ?',a-b,'Count back from the bigger number.']; }},
+  '3rd':function(){if(rnd(0,1)){var a=rnd(2,9),b=rnd(2,9);return[a+' x '+b+' = ?',a*b,'Times tables!'];}else{var a=rnd(15,50),b=rnd(10,30);return[a+' + '+b+' = ?',a+b,'Add the tens, then the ones.']; }},
+  '4th':function(){var t=rnd(0,2);if(t===0){var a=rnd(3,12),b=rnd(3,12);return[a+' x '+b+' = ?',a*b,'Times tables!'];}if(t===1){var b=rnd(2,9),a=b*rnd(2,9);return[a+' / '+b+' = ?',a/b,'What times that makes the big number?'];}var a=rnd(20,99),b=rnd(10,50);return[a+' + '+b+' = ?',a+b,'Line up tens and ones.'];},
+  '5th':function(){var t=rnd(0,2);if(t===0){var a=rnd(4,12),b=rnd(4,12);return[a+' x '+b+' = ?',a*b,'Times tables!'];}if(t===1){var b=rnd(3,9),a=b*rnd(3,12);return[a+' / '+b+' = ?',a/b,'Division undoes multiplication.'];}var a=rnd(50,200),b=rnd(20,100);return[a+' + '+b+' = ?',a+b,'Add hundreds, tens, ones.'];},
+  '6th':function(){var t=rnd(0,2);if(t===0){var a=rnd(5,15),b=rnd(5,15);return[a+' x '+b+' = ?',a*b,'Break it apart!'];}if(t===1){var b=rnd(2,9),a=b*rnd(4,15);return[a+' / '+b+' = ?',a/b,'What goes in evenly?'];}var a=rnd(2,9),b=rnd(2,9),c=rnd(1,4);return[a+' x '+b+' + '+c+' = ?',a*b+c,'Multiply first, then add!'];},
+  '7th':function(){if(rnd(0,1)){var a=rnd(2,9),b=rnd(2,9),c=rnd(1,5);return[a+' x '+b+' - '+c+' = ?',a*b-c,'Multiply first!'];}var a=rnd(-6,6),b=rnd(-6,6);return['('+a+') + ('+b+') = ?',a+b,'Watch the signs!'];}
+};
+
+function showGate(name,grade,avatar,isFirst){
+  _firstTime=isFirst; flex('gateModal');
+  $('gateAv').textContent=avatar;
+  var h=new Date().getHours();
+  $('gateGreet').textContent=(h<12?'Good morning':h<17?'Good afternoon':'Good evening')+', '+name+'!';
+  $('gateSkip').style.display=isFirst?'none':'inline';
+  var fn=PROBS[grade]||PROBS['3rd']; var p=fn(); _ans=p[1];
+  $('gateProb').textContent=p[0]; $('gateHint').textContent=p[2];
+  show('gateQ'); hide('gateSuc');
+  $('gateFb').textContent=''; $('gateFb').className='gate-fb';
+  var inp=$('gateAns'); inp.value=''; inp.className='gate-input';
+  setTimeout(function(){inp.focus();},400);
+}
+$('gateCheckBtn').addEventListener('click',checkGate);
+$('gateAns').addEventListener('keydown',function(e){if(e.key==='Enter')checkGate();});
+$('gateSkip').addEventListener('click',function(){enterApp(false);});
+$('gateEnterBtn').addEventListener('click',function(){enterApp(true);});
+
+function checkGate(){
+  var inp=$('gateAns'),val=parseFloat(inp.value),fb=$('gateFb');
+  if(inp.value.trim()===''||isNaN(val)){fb.textContent='Type a number first!';fb.className='gate-fb wrong';return;}
+  if(Math.abs(val-_ans)<0.001){
+    inp.className='gate-input good';
+    var s=load(); s.bonusXP=(s.bonusXP||0)+5; s.gatesSolved=(s.gatesSolved||0)+1; save(s);
+    showGateSuc();
+  } else {
+    inp.className='gate-input bad';
+    var msgs=['Not quite — try again!','So close! Give it another shot','Hmm, check your math!','Almost — think it through!'];
+    fb.textContent=msgs[rnd(0,msgs.length-1)]; fb.className='gate-fb wrong';
+    setTimeout(function(){inp.className='gate-input';inp.value='';inp.focus();},650);
+  }
+}
+function showGateSuc(){
+  hide('gateQ'); show('gateSuc');
+  var s=load();
+  var ts=['Nailed it!','BOOM! Correct!','Math brain activated!','Yes!! You got it!','Absolutely correct!'];
+  var is=['🎉','🌟','💥','⚡','🏆'];
+  $('gateSucTitle').textContent=ts[rnd(0,ts.length-1)];
+  $('gateIco').textContent=is[rnd(0,is.length-1)];
+  $('gateXpPill').textContent='+5 Bonus XP  (Total: '+totalXP(s)+' XP)';
+  $('gateWarns').style.display=_firstTime?'flex':'none';
+}
+function enterApp(awarded){
+  localStorage.setItem('sbhq_gate',new Date().toDateString());
+  if(_firstTime)localStorage.setItem('sbhq_warned','1');
+  var m=$('gateModal'); m.style.opacity='0'; m.style.transition='opacity .2s';
+  setTimeout(function(){m.style.display='none';m.style.opacity='';},220);
+  render(); if(awarded)toast('+5 Bonus XP for the warm-up!');
+}
+
+var IDEAS={
+  reading:['Dog Man by Dav Pilkey','Diary of a Wimpy Kid by Jeff Kinney','Big Nate by Lincoln Peirce','Harry Potter and the Sorcerer\'s Stone','Charlotte\'s Web by E.B. White','Wonder by R.J. Palacio','The One and Only Ivan','Hilo: The Boy Who Crashed to Earth (graphic novel)','Amulet graphic novel series','Smile by Raina Telgemeier (graphic novel)','Babysitters Club graphic novels','Percy Jackson and the Lightning Thief','The Phantom Tollbooth','James and the Giant Peach','Matilda by Roald Dahl','The Magic Tree House series','Goosebumps series by R.L. Stine','A mystery book from the library','A book about an animal you love','A book set in another country','A funny book that makes you laugh','A nonfiction book about something you are curious about','A book about a sport or hobby you enjoy','A graphic novel from the library','A magazine about something you love','Listen to an audiobook on a car ride','Read a comic book or newspaper comics','Read recipes while helping cook dinner','Read the instructions to a new game','Read a chapter aloud to a younger sibling'],
+  writing:['Write about the best part of your summer so far','Describe your perfect day from morning to night','Write about a time you were really proud of yourself','What is one thing you want to learn this summer and why?','Write about your favorite place to be','If you could go anywhere in the world where would you go?','Write about someone who is important to you and why','What is the funniest thing that ever happened to you?','Make up a superhero and describe their powers and weaknesses','Write a story that starts with: The door opened by itself','Invent an animal that does not exist and describe it','Write a story from the point of view of your pet','Create a menu for a restaurant you would want to open','Write about what the world will look like in 100 years','If you found a treasure map what would be at the end?','Write a letter to your future self to open on your 18th birthday','Write a postcard to a grandparent cousin or old friend','Write a review of a book movie or game you loved','Make a list of 10 things that make you happy','Write a letter to your teacher about your summer','Write instructions for how to do something you are good at','What would you do if you woke up and were invisible?','Invent a ridiculous new holiday and describe how people celebrate it','Write a story where the villain turns out to be a sock','If you could only eat one food forever what would it be and why?'],
+  math:['Figure out the total at the grocery store before the cashier does','Find three items on sale and calculate how much you save','If you had $20 to spend plan what you would buy','Count back change at a register or drive-through','Compare prices: which is the better deal per ounce?','Measure the ingredients for a recipe and double it','Figure out how many servings are in a box','Measure the length and width of a room in feet','Keep score in a card game like War or Go Fish','Track scores in a board game and find the difference','Play Around the World with multiplication flash cards','Roll two dice 10 times and add them up each time','Count how many steps it takes to walk around your block','Time how long something takes and convert to minutes and seconds','Look at a clock and calculate how many minutes until dinner','Figure out how many days until a big event','Practice your 7s times table in under a minute','Quiz yourself on division facts for 6 7 and 8','Write out multiplication facts from 1 to 12 as fast as you can','Ask a family member to quiz you on addition facts up to 20','Practice skip counting by 3s 4s and 6s','Find shapes in your neighborhood on a walk','Weigh ingredients on a kitchen scale','Figure out the tip at a restaurant','Count all the change in a coin jar and sort by value']
+};
+var _lastIdeas={reading:[],writing:[],math:[]};
+
+function getIdeas(type){
+  var pool=IDEAS[type].slice();
+  for(var i=pool.length-1;i>0;i--){var j=rnd(0,i);var t=pool[i];pool[i]=pool[j];pool[j]=t;}
+  var last=_lastIdeas[type];
+  var fresh=pool.filter(function(x){return last.indexOf(x)<0;});
+  if(fresh.length<3)fresh=pool;
+  var three=fresh.slice(0,3); _lastIdeas[type]=three; return three;
+}
+function buildChips(type,inputId,chipsId){
+  var c=$(chipsId); c.innerHTML='';
+  getIdeas(type).forEach(function(idea){
+    var btn=document.createElement('button');
+    btn.className='idea-chip';
+    var txt=document.createTextNode(idea);
+    var arr=document.createElement('span');
+    arr.className='idea-chip-arrow'; arr.textContent='→';
+    btn.appendChild(txt); btn.appendChild(arr);
+    btn.addEventListener('click',function(){
+      $(inputId).value=idea; $(inputId).focus();
+      ['rPanel','wPanel','mPanel'].forEach(function(id){$(id).classList.remove('open');});
+      toast('Idea loaded — tap Log It when ready!');
+    });
+    c.appendChild(btn);
+  });
+}
+function wireIdeas(tId,pId,mId,type,iId,cId){
+  $(tId).addEventListener('click',function(){
+    var p=$(pId),opening=!p.classList.contains('open');
+    ['rPanel','wPanel','mPanel'].forEach(function(id){$(id).classList.remove('open');});
+    if(opening){p.classList.add('open');buildChips(type,iId,cId);}
+  });
+  $(mId).addEventListener('click',function(){buildChips(type,iId,cId);});
+}
+
+var _fuType=null;
+var FUQ={
+  reading:['What happened in what you read today?','Who is your favorite character so far?','Would you recommend this to a friend? Why?','What do you think happens next?','What was the most interesting part?'],
+  writing:['What did you write about today?','Who did you write to or for?','What was the hardest part to write?','What word are you most proud of?','What is your story or message about?'],
+  math:['How did you figure it out?','Was it easy or tricky? Why?','What math did you use?','Could you teach someone else how to do it?','What did you discover?']
+};
+var FUI={reading:'📚',writing:'✏️',math:'🔢'};
+var FUT={reading:'Great reading!',writing:'Awesome writing!',math:'Math brain!'};
+
+function addEntry(type,inputId){
+  var inp=$(inputId),val=inp.value.trim();
+  if(!val){toast('Type something first!');return;}
+  var s=load();
+  s[type].unshift({text:val,date:dateStr(),id:Date.now()});
+  var ts=new Date().toDateString();
+  if(s.lastDay!==ts){var y=new Date();y.setDate(y.getDate()-1);s.streak=(s.lastDay===y.toDateString())?(s.streak||0)+1:1;s.lastDay=ts;s.weekDays[new Date().getDay()]=1;}
+  save(s); inp.value=''; render(); showFU(type);
+}
+function delEntry(type,id){var s=load();s[type]=s[type].filter(function(e){return e.id!==id;});save(s);render();}
+
+function showFU(type){
+  _fuType=type;
+  var qs=FUQ[type];
+  $('fuIco').textContent=FUI[type];
+  $('fuTitle').textContent=FUT[type];
+  $('fuQ').textContent=qs[rnd(0,qs.length-1)];
+  $('fuInput').value=''; flex('followModal');
+  setTimeout(function(){$('fuInput').focus();},350);
+}
+$('fuSubmitBtn').addEventListener('click',function(){
+  var val=$('fuInput').value.trim();
+  if(!val){toast('Type something first!');return;}
+  var s=load(); s.bonusXP=(s.bonusXP||0)+5;
+  if(s[_fuType]&&s[_fuType].length)s[_fuType][0].followup=val;
+  save(s); closeFU(); render(); toast('+5 Bonus XP for your answer!');
+});
+$('fuSkipBtn').addEventListener('click',closeFU);
+$('fuInput').addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();$('fuSubmitBtn').click();}});
+function closeFU(){var m=$('followModal');m.style.opacity='0';m.style.transition='opacity .18s';setTimeout(function(){m.style.display='none';m.style.opacity='';_fuType=null;},200);}
+
+$('notesSaveBtn').addEventListener('click',function(){
+  var val=$('notesInput').value.trim(); if(!val)return;
+  var s=load(); s.notes=s.notes||[];
+  s.notes.unshift({text:val,date:dateStr()});
+  save(s); showNote(s); $('notesInput').value=''; toast('Note saved!');
+});
+function showNote(s){
+  if(s.notes&&s.notes.length){var el=$('savedNote');el.style.display='block';el.textContent=s.notes[0].date+': '+s.notes[0].text;}
+}
+
+var DAYS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+var BADGES=[
+  {ico:'📖',name:'First Read',req:'Log 1 reading entry',chk:function(s){return s.reading.length>=1;}},
+  {ico:'🐛',name:'Bookworm',req:'5 reading entries',chk:function(s){return s.reading.length>=5;}},
+  {ico:'📚',name:'Bibliophile',req:'20 reading entries',chk:function(s){return s.reading.length>=20;}},
+  {ico:'✍️',name:'Word Wizard',req:'5 writing entries',chk:function(s){return s.writing.length>=5;}},
+  {ico:'🔢',name:'Math Master',req:'5 math entries',chk:function(s){return s.math.length>=5;}},
+  {ico:'🌟',name:'Triple Crown',req:'All 3 subjects',chk:function(s){return s.reading.length>=1&&s.writing.length>=1&&s.math.length>=1;}},
+  {ico:'🔥',name:'3-Day Streak',req:'3 days in a row',chk:function(s){return(s.streak||0)>=3;}},
+  {ico:'💥',name:'Week Warrior',req:'7 days in a row',chk:function(s){return(s.streak||0)>=7;}},
+  {ico:'⚡',name:'100 XP Club',req:'Earn 100 XP',chk:function(s){return totalXP(s)>=100;}},
+  {ico:'🚀',name:'Rocket Brain',req:'Earn 500 XP',chk:function(s){return totalXP(s)>=500;}},
+  {ico:'🎓',name:'Extra Credit!',req:'20 reading entries',chk:function(s){return s.reading.length>=20;}},
+  {ico:'🌈',name:'Summer Star',req:'50 total entries',chk:function(s){return(s.reading.length+s.writing.length+s.math.length)>=50;}},
+  {ico:'🧠',name:'Brain Warmer',req:'Solve 7 warm-ups',chk:function(s){return(s.gatesSolved||0)>=7;}}
+];
+
+function renderList(listId,entries,xpCls,type){
+  var el=$(listId);
+  var emp={rList:'No entries yet — go read something cool! 📖',wList:'No entries yet — grab a pencil! ✏️',mList:"No entries yet — let's count something! 🧮"};
+  if(!entries.length){el.innerHTML='<div class="empty">'+emp[listId]+'</div>';return;}
+  el.innerHTML='';
+  entries.forEach(function(e){
+    var d=document.createElement('div'); d.className='entry';
+    var fu=e.followup?'<div class="entry-followup">💬 '+e.followup+'</div>':'';
+    d.innerHTML='<span class="entry-date">'+e.date+'</span><span class="entry-body"><span class="entry-text">'+e.text+'</span>'+fu+'</span><span class="entry-xp '+xpCls+'">+10 XP</span><button class="entry-del">×</button>';
+    var eId=e.id;
+    d.querySelector('.entry-del').addEventListener('click',function(){delEntry(type,eId);});
+    el.appendChild(d);
+  });
+}
+function renderWeek(s){
+  var td=new Date().getDay(),g=$('weekGrid'); g.innerHTML='';
+  DAYS.forEach(function(name,i){
+    var d=document.createElement('div');
+    d.className='day'+(s.weekDays[i]?' on':'')+(i===td?' td':'');
+    d.innerHTML='<span class="day-dot">'+(s.weekDays[i]?'✅':'⬜')+'</span><span>'+name+'</span>';
+    var idx=i;
+    d.addEventListener('click',function(){var st=load();st.weekDays[idx]=st.weekDays[idx]?0:1;save(st);renderWeek(st);});
+    g.appendChild(d);
+  });
+}
+function renderBadges(s){
+  var g=$('badgeGrid'); g.innerHTML='';
+  BADGES.forEach(function(b){
+    var earned=b.chk(s),d=document.createElement('div');
+    d.className='badge'+(earned?'':' locked'); d.title=earned?'Earned!':b.req;
+    d.innerHTML='<span class="badge-ico">'+b.ico+'</span><span class="badge-name">'+b.name+'</span><span class="badge-req">'+(earned?'✅ Earned':b.req)+'</span>';
+    g.appendChild(d);
+  });
+}
+function render(){
+  var s=load();
+  $('streakEl').textContent=s.streak||0;
+  $('xpEl').textContent=totalXP(s);
+  renderList('rList',s.reading,'xr','reading');
+  renderList('wList',s.writing,'xw','writing');
+  renderList('mList',s.math,'xm','math');
+  renderWeek(s); renderBadges(s); showNote(s);
+  var r=s.reading.length,m=s.math.length;
+  $('rEC').textContent=r+' / 20'; $('rBar').style.width=Math.min(100,(r/20)*100)+'%';
+  $('mEC').textContent=m+' / 20'; $('mBar').style.width=Math.min(100,(m/20)*100)+'%';
+}
+
+$('rBtn').addEventListener('click',function(){addEntry('reading','rInput');});
+$('wBtn').addEventListener('click',function(){addEntry('writing','wInput');});
+$('mBtn').addEventListener('click',function(){addEntry('math','mInput');});
+$('rInput').addEventListener('keydown',function(e){if(e.key==='Enter')addEntry('reading','rInput');});
+$('wInput').addEventListener('keydown',function(e){if(e.key==='Enter')addEntry('writing','wInput');});
+$('mInput').addEventListener('keydown',function(e){if(e.key==='Enter')addEntry('math','mInput');});
+
+(function(){
+  wireIdeas('rTrigger','rPanel','rMore','reading','rInput','rChips');
+  wireIdeas('wTrigger','wPanel','wMore','writing','wInput','wChips');
+  wireIdeas('mTrigger','mPanel','mMore','math','mInput','mChips');
+  var s=load();
+  if(s.name&&s.grade&&s.avatar){
+    hide('setupScreen'); show('mainApp');
+    applyProfile(s); render();
+    var gd=localStorage.getItem('sbhq_gate');
+    if(gd!==new Date().toDateString()){showGate(s.name,s.grade,s.avatar,!localStorage.getItem('sbhq_warned'));}
+  }
+})();
+</script>
+</body>
+</html>
