@@ -234,6 +234,94 @@ footer{text-align:center;padding:20px;color:var(--muted);font-size:.72rem;font-w
 /* TOAST */
 .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--card);color:var(--text);border:1px solid var(--border);padding:12px 24px;border-radius:50px;font-family:'Fredoka One',cursive;font-size:1rem;z-index:1100;transition:transform .4s cubic-bezier(.34,1.56,.64,1);pointer-events:none;white-space:nowrap;box-shadow:0 8px 32px rgba(0,0,0,.4);}
 .toast.show{transform:translateX(-50%) translateY(0);}
+
+/* ── PRINT BUTTON ── */
+.print-btn {
+  display:inline-flex; align-items:center; gap:8px;
+  background:none; border:1px solid var(--border);
+  border-radius:8px; padding:6px 14px;
+  font-size:.72rem; font-weight:800; color:var(--muted);
+  cursor:pointer; transition:all .2s; font-family:'Nunito',sans-serif;
+  margin-top:12px;
+}
+.print-btn:hover { border-color:var(--amber); color:var(--amber); }
+
+/* ── PRINT STYLES ── */
+@media print {
+  * { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+
+  /* hide everything interactive */
+  #setupScreen, #gateModal, #followModal, .toast,
+  .reset-btn, .print-btn, .idea-trigger, .idea-panel,
+  .log-row, .entry-del, .notes-ta, .notes-save,
+  .week-grid, .week-lbl, footer { display:none !important; }
+
+  body { background:#fff !important; color:#111 !important; font-family:'Nunito',sans-serif; }
+  #mainApp { display:block !important; }
+  header { padding:20px 0 10px; }
+  .hdr-avatar { display:none; }
+  h1 { font-size:22pt; color:#111 !important; text-shadow:none; }
+  .hdr-sub { font-size:11pt; color:#555 !important; }
+  .hdr-badge { background:#eee !important; color:#333 !important; border:1px solid #ccc !important; font-size:8pt; }
+
+  /* hide xp banner on print — we render our own summary */
+  .xp-banner { display:none !important; }
+
+  /* GRID: no hover effects, white cards */
+  .grid { padding:0; gap:0; }
+  .card {
+    background:#fff !important; border:none !important;
+    border-radius:0 !important; padding:0 !important;
+    box-shadow:none !important; transform:none !important;
+  }
+  .card:hover { transform:none !important; box-shadow:none !important; }
+
+  /* Page 1: summary block */
+  #printSummary {
+    display:block !important;
+    page-break-after:always;
+    border:2px solid #111;
+    border-radius:8px;
+    padding:20px 24px;
+    margin-bottom:0;
+    font-family:'Nunito',sans-serif;
+  }
+  #printSummary h2 { font-size:14pt; margin-bottom:14px; color:#111; border-bottom:1px solid #ddd; padding-bottom:6px; }
+  .ps-row { display:flex; gap:32px; margin-bottom:16px; flex-wrap:wrap; }
+  .ps-stat { flex:1; min-width:100px; }
+  .ps-stat-label { font-size:7pt; font-weight:800; text-transform:uppercase; letter-spacing:1px; color:#777; margin-bottom:2px; }
+  .ps-stat-val { font-size:22pt; font-weight:800; color:#111; line-height:1; }
+  .ps-bar-wrap { margin-bottom:10px; }
+  .ps-bar-label { display:flex; justify-content:space-between; font-size:8pt; font-weight:800; color:#555; margin-bottom:3px; }
+  .ps-bar-track { height:10px; background:#eee; border-radius:99px; overflow:hidden; }
+  .ps-bar-fill { height:100%; border-radius:99px; }
+  .ps-bar-r { background:#F59E0B; }
+  .ps-bar-m { background:#10B981; }
+  .ps-badges { margin-top:14px; }
+  .ps-badges-label { font-size:8pt; font-weight:800; text-transform:uppercase; letter-spacing:1px; color:#777; margin-bottom:6px; }
+  .ps-badge-list { display:flex; flex-wrap:wrap; gap:6px; }
+  .ps-badge-chip { background:#f3f4f6; border:1px solid #e5e7eb; border-radius:6px; padding:3px 8px; font-size:8pt; font-weight:700; color:#333; }
+
+  /* Page 2: log entries */
+  #printLog {
+    display:block !important;
+    page-break-before:always;
+    font-family:'Nunito',sans-serif;
+  }
+  #printLog h2 { font-size:14pt; color:#111; border-bottom:1px solid #ddd; padding-bottom:6px; margin-bottom:12px; }
+  .pl-section { margin-bottom:20px; }
+  .pl-section-title { font-size:11pt; font-weight:800; color:#111; margin-bottom:8px; display:flex; align-items:center; gap:8px; }
+  .pl-section-count { font-size:8pt; font-weight:700; color:#777; }
+  .pl-entry { display:flex; gap:10px; padding:5px 0; border-bottom:1px solid #f0f0f0; font-size:9pt; }
+  .pl-date { color:#888; font-weight:700; flex-shrink:0; width:52px; }
+  .pl-text { flex:1; color:#111; font-weight:600; line-height:1.4; }
+  .pl-followup { color:#7C3AED; font-size:8pt; margin-top:2px; }
+  .pl-empty { color:#aaa; font-style:italic; font-size:9pt; }
+
+  /* hide cards that aren't print sections */
+  .card-r, .card-w, .card-m,
+  .card:not(#printSummary):not(#printLog) { display:none !important; }
+}
 </style>
 </head>
 <body>
@@ -288,6 +376,7 @@ footer{text-align:center;padding:20px;color:var(--muted);font-size:.72rem;font-w
     <h1 id="hdrTitle">Summer Brain HQ</h1>
     <p class="hdr-sub" id="hdrSub"></p>
     <div class="hdr-badge">Miss Degnan &middot; Mr. Dobbins &middot; Mrs. Stankevicius</div>
+    <button class="print-btn" id="printBtn">&#128438; Print Progress Report</button>
     <button class="reset-btn" id="resetBtn">&#9881; Reset</button>
   </header>
 
@@ -362,6 +451,55 @@ footer{text-align:center;padding:20px;color:var(--muted);font-size:.72rem;font-w
       <button class="notes-save" id="notesSaveBtn">Save Note &#128190;</button>
       <div class="saved-note" id="savedNote"></div>
     </div>
+
+  <!-- PRINT: Summary Page -->
+  <div id="printSummary" style="display:none;">
+    <h2>&#128438; Summer Progress Report</h2>
+    <div class="ps-row">
+      <div class="ps-stat"><div class="ps-stat-label">Student</div><div class="ps-stat-val" id="ps-name" style="font-size:16pt;"></div></div>
+      <div class="ps-stat"><div class="ps-stat-label">Grade</div><div class="ps-stat-val" id="ps-grade"></div></div>
+      <div class="ps-stat"><div class="ps-stat-label">Total XP</div><div class="ps-stat-val" id="ps-xp"></div></div>
+      <div class="ps-stat"><div class="ps-stat-label">Day Streak</div><div class="ps-stat-val" id="ps-streak"></div></div>
+    </div>
+    <div class="ps-row">
+      <div class="ps-stat"><div class="ps-stat-label">Reading Entries</div><div class="ps-stat-val" id="ps-r"></div></div>
+      <div class="ps-stat"><div class="ps-stat-label">Writing Entries</div><div class="ps-stat-val" id="ps-w"></div></div>
+      <div class="ps-stat"><div class="ps-stat-label">Math Entries</div><div class="ps-stat-val" id="ps-m"></div></div>
+      <div class="ps-stat"><div class="ps-stat-label">Total Entries</div><div class="ps-stat-val" id="ps-total"></div></div>
+    </div>
+    <div class="ps-bar-wrap">
+      <div class="ps-bar-label"><span>&#128218; Reading Log &mdash; Extra Credit Goal</span><span id="ps-r-lbl">0 / 20</span></div>
+      <div class="ps-bar-track"><div class="ps-bar-fill ps-bar-r" id="ps-r-bar" style="width:0%"></div></div>
+    </div>
+    <div class="ps-bar-wrap">
+      <div class="ps-bar-label"><span>&#128290; Fact Fluency Log &mdash; Extra Credit Goal</span><span id="ps-m-lbl">0 / 20</span></div>
+      <div class="ps-bar-track"><div class="ps-bar-fill ps-bar-m" id="ps-m-bar" style="width:0%"></div></div>
+    </div>
+    <div class="ps-badges">
+      <div class="ps-badges-label">Badges Earned</div>
+      <div class="ps-badge-list" id="ps-badges"></div>
+    </div>
+  </div>
+
+  <!-- PRINT: Full Log Page -->
+  <div id="printLog" style="display:none;">
+    <h2>&#128218; Full Activity Log</h2>
+    <div class="pl-section">
+      <div class="pl-section-title">&#128218; Reading <span class="pl-section-count" id="pl-r-count"></span></div>
+      <div id="pl-r-entries"></div>
+    </div>
+    <div class="pl-section">
+      <div class="pl-section-title">&#9999;&#65039; Writing <span class="pl-section-count" id="pl-w-count"></span></div>
+      <div id="pl-w-entries"></div>
+    </div>
+    <div class="pl-section">
+      <div class="pl-section-title">&#128290; Math &amp; Fact Fluency <span class="pl-section-count" id="pl-m-count"></span></div>
+      <div id="pl-m-entries"></div>
+    </div>
+    <div style="margin-top:24px;font-size:8pt;color:#aaa;border-top:1px solid #eee;padding-top:8px;">
+      Printed from Summer Brain HQ &mdash; Miss Degnan, Mr. Dobbins &amp; Mrs. Stankevicius
+    </div>
+  </div>
 
   </div>
   <footer id="footerEl">Keep the streak alive! &#9728;&#65039;</footer>
@@ -705,6 +843,82 @@ $('mInput').addEventListener('keydown',function(e){if(e.key==='Enter')addEntry('
     if(gd!==new Date().toDateString()){showGate(s.name,s.grade,s.avatar,!localStorage.getItem('sbhq_warned'));}
   }
 })();
+
+// ── PRINT ──────────────────────────────────────────────
+var BADGES_PRINT=[
+  {ico:'📖',name:'First Read',chk:function(s){return s.reading.length>=1;}},
+  {ico:'🐛',name:'Bookworm',chk:function(s){return s.reading.length>=5;}},
+  {ico:'📚',name:'Bibliophile',chk:function(s){return s.reading.length>=20;}},
+  {ico:'✍️',name:'Word Wizard',chk:function(s){return s.writing.length>=5;}},
+  {ico:'🔢',name:'Math Master',chk:function(s){return s.math.length>=5;}},
+  {ico:'🌟',name:'Triple Crown',chk:function(s){return s.reading.length>=1&&s.writing.length>=1&&s.math.length>=1;}},
+  {ico:'🔥',name:'3-Day Streak',chk:function(s){return(s.streak||0)>=3;}},
+  {ico:'💥',name:'Week Warrior',chk:function(s){return(s.streak||0)>=7;}},
+  {ico:'⚡',name:'100 XP Club',chk:function(s){return totalXP(s)>=100;}},
+  {ico:'🚀',name:'Rocket Brain',chk:function(s){return totalXP(s)>=500;}},
+  {ico:'🎓',name:'Extra Credit!',chk:function(s){return s.reading.length>=20;}},
+  {ico:'🌈',name:'Summer Star',chk:function(s){return(s.reading.length+s.writing.length+s.math.length)>=50;}},
+  {ico:'🧠',name:'Brain Warmer',chk:function(s){return(s.gatesSolved||0)>=7;}}
+];
+
+function buildPrintEntriesEl(entries, containerId) {
+  var el = $(containerId);
+  el.innerHTML = '';
+  if (!entries.length) {
+    el.innerHTML = '<div class="pl-empty">No entries logged yet.</div>';
+    return;
+  }
+  entries.forEach(function(e) {
+    var d = document.createElement('div');
+    d.className = 'pl-entry';
+    var fu = e.followup ? '<div class="pl-followup">&#128172; ' + e.followup + '</div>' : '';
+    d.innerHTML = '<span class="pl-date">' + e.date + '</span><span class="pl-text">' + e.text + fu + '</span>';
+    el.appendChild(d);
+  });
+}
+
+function doPrint() {
+  var s = load();
+  // populate summary
+  $('ps-name').textContent   = s.name || '';
+  $('ps-grade').textContent  = s.grade ? 'Going into ' + s.grade : '';
+  $('ps-xp').textContent     = totalXP(s);
+  $('ps-streak').textContent = (s.streak || 0) + ' days';
+  $('ps-r').textContent      = s.reading.length;
+  $('ps-w').textContent      = s.writing.length;
+  $('ps-m').textContent      = s.math.length;
+  $('ps-total').textContent  = s.reading.length + s.writing.length + s.math.length;
+  var rPct = Math.min(100, (s.reading.length / 20) * 100);
+  var mPct = Math.min(100, (s.math.length / 20) * 100);
+  $('ps-r-lbl').textContent  = s.reading.length + ' / 20 entries';
+  $('ps-r-bar').style.width  = rPct + '%';
+  $('ps-m-lbl').textContent  = s.math.length + ' / 20 entries';
+  $('ps-m-bar').style.width  = mPct + '%';
+  var earned = BADGES_PRINT.filter(function(b){ return b.chk(s); });
+  var bl = $('ps-badges');
+  bl.innerHTML = '';
+  if (!earned.length) {
+    bl.innerHTML = '<span style="font-size:8pt;color:#aaa;font-style:italic;">No badges earned yet — keep going!</span>';
+  } else {
+    earned.forEach(function(b) {
+      var chip = document.createElement('span');
+      chip.className = 'ps-badge-chip';
+      chip.textContent = b.ico + ' ' + b.name;
+      bl.appendChild(chip);
+    });
+  }
+  // populate log page
+  $('pl-r-count').textContent = '(' + s.reading.length + ' entries)';
+  $('pl-w-count').textContent = '(' + s.writing.length + ' entries)';
+  $('pl-m-count').textContent = '(' + s.math.length + ' entries)';
+  buildPrintEntriesEl(s.reading, 'pl-r-entries');
+  buildPrintEntriesEl(s.writing, 'pl-w-entries');
+  buildPrintEntriesEl(s.math,    'pl-m-entries');
+  window.print();
+}
+
+$('printBtn').addEventListener('click', doPrint);
+
 </script>
 </body>
 </html>
