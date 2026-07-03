@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>South Beloit Trip 🎆</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600&display=swap');
+    :root {
+      --sky: #1a3a5c; --sky-mid: #2a5a8c; --gold: #e8b94a;
+      --cream: #f7f3ec; --dusk: #3d2b5a; --text: #1a1a2e;
+      --muted: #6b7280; --card: #ffffff; --radius: 12px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: var(--cream); color: var(--text); min-height: 100vh; }
+    .hero {
+      background: linear-gradient(160deg, var(--sky) 0%, var(--dusk) 60%, #1a1a2e 100%);
+      padding: 48px 20px 36px; text-align: center; position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: ''; position: absolute; top: -20px; left: -20px; right: -20px; bottom: 0;
+      background: radial-gradient(ellipse at 50% 120%, rgba(232,185,74,0.18) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .fireworks { font-size: 2rem; display: flex; justify-content: center; gap: 12px; margin-bottom: 12px; animation: pop 2s ease-in-out infinite alternate; }
+    @keyframes pop { from { transform: scale(1); opacity: 0.9; } to { transform: scale(1.08); opacity: 1; } }
+    .hero h1 { font-family: 'Libre Baskerville', serif; font-size: clamp(1.8rem,6vw,2.8rem); color: #fff; line-height: 1.2; margin-bottom: 8px; }
+    .hero h1 span { color: var(--gold); }
+    .hero .subtitle { color: rgba(255,255,255,0.7); font-size: 0.9rem; letter-spacing: 0.04em; margin-bottom: 20px; }
+    .address-pill { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); border-radius: 999px; padding: 8px 16px; color: rgba(255,255,255,0.85); font-size: 0.82rem; }
+    .tab-nav { display: flex; background: var(--sky); overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; border-bottom: 2px solid var(--gold); }
+    .tab-nav::-webkit-scrollbar { display: none; }
+    .tab-btn { flex: none; padding: 12px 20px; color: rgba(255,255,255,0.6); font-size: 0.82rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; cursor: pointer; border: none; background: none; white-space: nowrap; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: color 0.2s; }
+    .tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
+    .tab-content { display: none; padding: 20px 16px 40px; max-width: 680px; margin: 0 auto; }
+    .tab-content.active { display: block; }
+    .day-card { background: var(--card); border-radius: var(--radius); margin-bottom: 16px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
+    .day-header { display: flex; align-items: center; gap: 12px; padding: 14px 16px; cursor: pointer; user-select: none; }
+    .day-dot { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+    .day-header h3 { font-family: 'Libre Baskerville', serif; font-size: 1rem; color: var(--text); flex: 1; }
+    .day-header .date-badge { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+    .chevron { color: var(--muted); font-size: 0.8rem; transition: transform 0.25s; }
+    .day-card.open .chevron { transform: rotate(180deg); }
+    .day-body { display: none; padding: 0 16px 16px; border-top: 1px solid #f0ede8; }
+    .day-card.open .day-body { display: block; }
+    .activity { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid #f5f2ee; }
+    .activity:last-child { border-bottom: none; }
+    .activity.open-slot { background: #fafaf7; border-radius: 8px; padding: 12px; margin: 8px 0; border: 1.5px dashed #d1c9b8; }
+    .activity.open-slot h4 { color: #8a7a60; }
+    .activity.open-slot p { color: #a8956e; }
+    .activity-icon { font-size: 1.4rem; flex-shrink: 0; width: 28px; text-align: center; margin-top: 2px; }
+    .activity-info h4 { font-weight: 600; font-size: 0.92rem; margin-bottom: 3px; }
+    .activity-info p { font-size: 0.82rem; color: var(--muted); line-height: 1.5; }
+    .tag { display: inline-block; font-size: 0.68rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; padding: 2px 8px; border-radius: 999px; margin-top: 5px; margin-right: 4px; }
+    .tag-free { background: #d1fae5; color: #065f46; }
+    .tag-dogs { background: #fef3c7; color: #92400e; }
+    .tag-beach { background: #dbeafe; color: #1e40af; }
+    .tag-food { background: #fce7f3; color: #9d174d; }
+    .tag-chill { background: #ede9fe; color: #5b21b6; }
+    .tag-kids { background: #ffedd5; color: #9a3412; }
+    .tag-open { background: #f3f4f6; color: #6b7280; }
+    .spot-card { background: var(--card); border-radius: var(--radius); padding: 16px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: flex; gap: 14px; }
+    .spot-icon { font-size: 1.8rem; flex-shrink: 0; }
+    .spot-info h3 { font-family: 'Libre Baskerville', serif; font-size: 0.97rem; margin-bottom: 4px; }
+    .spot-info p { font-size: 0.81rem; color: var(--muted); line-height: 1.5; margin-bottom: 6px; }
+    .distance { font-size: 0.72rem; font-weight: 600; color: var(--sky-mid); }
+    .tip-card { background: linear-gradient(135deg, #fff8e1, #fff3cd); border-left: 4px solid var(--gold); border-radius: 0 var(--radius) var(--radius) 0; padding: 14px 16px; margin-bottom: 12px; }
+    .tip-card h4 { font-weight: 600; font-size: 0.88rem; margin-bottom: 4px; color: #7c5a00; }
+    .tip-card p { font-size: 0.82rem; color: #8a6800; line-height: 1.5; }
+    .section-label { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin: 24px 0 10px; }
+    .vibes { text-align: center; padding: 32px 20px; color: var(--muted); font-size: 0.8rem; font-style: italic; }
+    @media (prefers-reduced-motion: reduce) { .fireworks { animation: none; } .chevron { transition: none; } }
+  </style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="fireworks">🎆 🌊 🎆</div>
+  <h1>South Beloit <span>Trip '25</span></h1>
+  <p class="subtitle">July 4–9 · Phillips &amp; Friends Road Trip</p>
+  <div class="address-pill">📍 721 Roscoe Ave, South Beloit, IL 61080</div>
+</div>
+
+<nav class="tab-nav">
+  <button class="tab-btn active" onclick="showTab('itinerary', this)">Itinerary</button>
+  <button class="tab-btn" onclick="showTab('spots', this)">Spots</button>
+  <button class="tab-btn" onclick="showTab('tips', this)">Good to Know</button>
+</nav>
+
+<div class="tab-content active" id="tab-itinerary">
+
+  <!-- July 4 — Arrival + Fireworks -->
+  <div class="day-card open">
+    <div class="day-header" onclick="toggleDay(this)">
+      <div class="day-dot" style="background:#1a3a5c">🎆</div>
+      <div>
+        <h3>Arrival Day + Fireworks</h3>
+        <div class="date-badge">Saturday, July 4</div>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="activity">
+        <div class="activity-icon">🚗</div>
+        <div class="activity-info">
+          <h4>Roll in &amp; get settled</h4>
+          <p>Unpack, get the dogs comfortable, check out the place. No plans until evening.</p>
+        </div>
+      </div>
+      <div class="activity open-slot">
+        <div class="activity-icon">☀️</div>
+        <div class="activity-info">
+          <h4>Afternoon — open time</h4>
+          <p>Explore the neighborhood, backyard hang, let the kids run. Whatever the day calls for.</p>
+          <span class="tag tag-open">Go with it</span>
+        </div>
+      </div>
+      <div class="activity">
+        <div class="activity-icon">🎻</div>
+        <div class="activity-info">
+          <h4>Pops on the Rock — Riverside Park, Beloit</h4>
+          <p>Free outdoor symphony then fireworks at dusk. Harry Moore Pavilion, 1160 Riverside Dr, Beloit WI. Concert 7:30pm. Bring lawn chairs — food trucks on site. Special extended show this year for America's 250th.</p>
+          <span class="tag tag-free">Free</span>
+          <span class="tag tag-kids">All Ages</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- July 5 — Rachel arrives -->
+  <div class="day-card">
+    <div class="day-header" onclick="toggleDay(this)">
+      <div class="day-dot" style="background:#7c3aed">🎮</div>
+      <div>
+        <h3>Rachel Arrives + Kids' Night Out</h3>
+        <div class="date-badge">Sunday, July 5</div>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="activity">
+        <div class="activity-icon">🌅</div>
+        <div class="activity-info">
+          <h4>Morning — relaxed house time</h4>
+          <p>Rachel's crew doesn't check in until ~3pm. Use the yards to keep dogs split up. Hang out, take it easy.</p>
+          <span class="tag tag-dogs">Dogs in yard</span>
+        </div>
+      </div>
+      <div class="activity open-slot">
+        <div class="activity-icon">❓</div>
+        <div class="activity-info">
+          <h4>Early afternoon — see what happens</h4>
+          <p>Grocery run, backyard games, catching up. No pressure to fill it.</p>
+          <span class="tag tag-open">Open Time</span>
+        </div>
+      </div>
+      <div class="activity">
+        <div class="activity-icon">🎮</div>
+        <div class="activity-info">
+          <h4>Coral Cove Family Fun Center — Evening</h4>
+          <p>Arcades, bounce houses, Bowlingo, VR, BEAM interactive playground, snack bar. All indoors. 586 Progressive Ln, South Beloit. Open Sun noon–8pm. Perfect for all the kids once everyone's settled and dogs are handled.</p>
+          <span class="tag tag-kids">Kids</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- July 6 — Pearl Lake -->
+  <div class="day-card">
+    <div class="day-header" onclick="toggleDay(this)">
+      <div class="day-dot" style="background:#1d4ed8">🏖️</div>
+      <div>
+        <h3>Pearl Lake — Cabana Day</h3>
+        <div class="date-badge">Monday, July 6</div>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="activity open-slot">
+        <div class="activity-icon">☕</div>
+        <div class="activity-info">
+          <h4>Morning — slow start</h4>
+          <p>Coffee, yard time, no rush. Let it come together naturally before heading out.</p>
+          <span class="tag tag-open">Open Time</span>
+        </div>
+      </div>
+      <div class="activity">
+        <div class="activity-icon">🌊</div>
+        <div class="activity-info">
+          <h4>Pearl Lake Beach — Cabana</h4>
+          <p>207 acres, lifeguard beach, snack bar on site. Majorly upgraded — people are raving. Monday means way fewer people than the weekend. Book a cabana ahead if possible.</p>
+          <span class="tag tag-beach">Beach</span>
+          <span class="tag tag-kids">Kids</span>
+          <span class="tag tag-food">Snack Bar</span>
+        </div>
+      </div>
+      <div class="activity open-slot">
+        <div class="activity-icon">🌆</div>
+        <div class="activity-info">
+          <h4>Evening — whatever feels right</h4>
+          <p>Backyard, board games, takeout. The day was full. Keep the night easy.</p>
+          <span class="tag tag-open">Open Time</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- July 7 — Rachel checks out, maybe lingers -->
+  <div class="day-card">
+    <div class="day-header" onclick="toggleDay(this)">
+      <div class="day-dot" style="background:#2d6a4f">🌿</div>
+      <div>
+        <h3>Rachel's Crew Heads Out</h3>
+        <div class="date-badge">Tuesday, July 7</div>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="activity">
+        <div class="activity-icon">🌅</div>
+        <div class="activity-info">
+          <h4>Morning — last hang with Rachel's crew</h4>
+          <p>They're checking out but the houses are next door — there's no rush to say goodbye at 9am. Use the yards, have coffee together, let it wind down naturally.</p>
+          <span class="tag tag-dogs">Dogs in yard</span>
+        </div>
+      </div>
+      <div class="activity open-slot">
+        <div class="activity-icon">❓</div>
+        <div class="activity-info">
+          <h4>They might linger, they might need to roll — TBD</h4>
+          <p>No pressure either way. If they stick around a bit after checkout that's great. If they've gotta get back, that's fine too. Leave it open.</p>
+          <span class="tag tag-open">See how it goes</span>
+        </div>
+      </div>
+      <div class="activity open-slot">
+        <div class="activity-icon">🃏</div>
+        <div class="activity-info">
+          <h4>Afternoon — your family's time</h4>
+          <p>Once it's just you three — Rock River float, farmers market, board games, backyard, or nothing. Let the day decide.</p>
+          <span class="tag tag-open">Open Time</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- July 8 — Last full day -->
+  <div class="day-card">
+    <div class="day-header" onclick="toggleDay(this)">
+      <div class="day-dot" style="background:#0369a1">🌊</div>
+      <div>
+        <h3>Your Evening — Wind Down</h3>
+        <div class="date-badge">Tuesday, July 7 — Evening</div>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="activity open-slot">
+        <div class="activity-icon">☀️</div>
+        <div class="activity-info">
+          <h4>Completely open</h4>
+          <p>Sleep in. Slow coffee. Let Dolyn set the pace. Nowhere to be.</p>
+          <span class="tag tag-open">Open Time</span>
+        </div>
+      </div>
+      <div class="activity">
+        <div class="activity-icon">🚣</div>
+        <div class="activity-info">
+          <h4>Rock River Float (maybe)</h4>
+          <p>~2.5 hour float. Low effort, scenic, people love it. Good if the weather's right and everyone's up for it.</p>
+          <span class="tag tag-chill">Chill</span>
+        </div>
+      </div>
+      <div class="activity open-slot">
+        <div class="activity-icon">🃏</div>
+        <div class="activity-info">
+          <h4>Afternoon — board games, yard, or nothing</h4>
+          <p>Last full day. Be together however feels natural.</p>
+          <span class="tag tag-open">Open Time</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- July 9 — Head home -->
+  <div class="day-card">
+    <div class="day-header" onclick="toggleDay(this)">
+      <div class="day-dot" style="background:#6b7280">🚗</div>
+      <div>
+        <h3>Pack Up + Head Home</h3>
+        <div class="date-badge">Wednesday, July 8</div>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="activity">
+        <div class="activity-icon">☕</div>
+        <div class="activity-info">
+          <h4>One last easy morning</h4>
+          <p>Coffee, final dog walk, leave the place clean. Head home.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- SPOTS TAB -->
+<div class="tab-content" id="tab-spots">
+
+  <p class="section-label">Must-Do</p>
+
+  <div class="spot-card">
+    <div class="spot-icon">🎆</div>
+    <div class="spot-info">
+      <h3>Pops on the Rock</h3>
+      <p>Free outdoor symphony + fireworks at Riverside Park. July 4 only. Concert at 7:30pm, fireworks at dusk. Extended show — America's 250th. Bring chairs.</p>
+      <div class="distance">📍 1160 Riverside Dr, Beloit, WI · ~5 min drive</div>
+      <span class="tag tag-free">Free</span>
+    </div>
+  </div>
+
+  <div class="spot-card">
+    <div class="spot-icon">🏖️</div>
+    <div class="spot-info">
+      <h3>Pearl Lake Beach</h3>
+      <p>207 acres, lifeguard beach, snack bar, cabanas. Majorly upgraded. Book a cabana ahead if possible. Monday is calmer than weekends.</p>
+      <div class="distance">📍 South Beloit · ~5 min drive</div>
+      <span class="tag tag-beach">Beach</span>
+      <span class="tag tag-kids">Kids</span>
+    </div>
+  </div>
+
+  <div class="spot-card">
+    <div class="spot-icon">🎮</div>
+    <div class="spot-info">
+      <h3>Coral Cove Family Fun Center</h3>
+      <p>Arcades, bounce houses, Bowlingo, VR, BEAM interactive playground, snack bar. All indoors. 94% recommend. Open Sun noon–8pm. Bring socks for bounce houses.</p>
+      <div class="distance">📍 586 Progressive Ln, South Beloit · ~5 min drive</div>
+      <span class="tag tag-kids">Kids</span>
+    </div>
+  </div>
+
+  <p class="section-label">If the Mood Strikes</p>
+
+  <div class="spot-card">
+    <div class="spot-icon">🚣</div>
+    <div class="spot-info">
+      <h3>Rock River Float</h3>
+      <p>~2.5 hour float. Easygoing, scenic, reviewers love it. Good low-effort afternoon option.</p>
+      <div class="distance">📍 Beloit area · ~10 min drive</div>
+      <span class="tag tag-chill">Chill</span>
+    </div>
+  </div>
+
+  <div class="spot-card">
+    <div class="spot-icon">🌿</div>
+    <div class="spot-info">
+      <h3>Nature at the Confluence</h3>
+      <p>Walking trails at the Rock River confluence. Easy, scenic, free. Dogs welcome.</p>
+      <div class="distance">📍 306 Dickop St, South Beloit · ~3 min drive</div>
+      <span class="tag tag-free">Free</span>
+      <span class="tag tag-dogs">Dogs</span>
+    </div>
+  </div>
+
+  <div class="spot-card">
+    <div class="spot-icon">🌾</div>
+    <div class="spot-info">
+      <h3>Beloit Farmers Market</h3>
+      <p>Highly rated — people say it rivals markets in towns 10x the size of Beloit. Good easy morning outing.</p>
+      <div class="distance">📍 Downtown Beloit · ~8 min drive</div>
+      <span class="tag tag-free">Free</span>
+    </div>
+  </div>
+
+  <div class="spot-card">
+    <div class="spot-icon">🏛️</div>
+    <div class="spot-info">
+      <h3>Logan Museum of Anthropology</h3>
+      <p>Beloit College campus. Good rainy-day option. Interesting for kids and adults.</p>
+      <div class="distance">📍 Beloit College · ~10 min drive</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- TIPS TAB -->
+<div class="tab-content" id="tab-tips">
+
+  <div class="tip-card">
+    <h4>🏖️ Pearl Lake — Book a Cabana Ahead</h4>
+    <p>Cabanas book up. Reserve online before Monday. Snack bar is on site so keep packing light.</p>
+  </div>
+
+  <div class="tip-card">
+    <h4>🎆 Pops on the Rock — Get There Early</h4>
+    <p>Free event, big crowd. Bring lawn chairs. Park early, walk in. Food trucks on site. Extended show this year for America's 250th.</p>
+  </div>
+
+  <div class="tip-card">
+    <h4>🎮 Coral Cove — Bring Socks</h4>
+    <p>Required for bounce houses. Open Sunday noon–8pm.</p>
+  </div>
+
+  <div class="tip-card">
+    <h4>🐕 Five Dogs</h4>
+    <p>Two houses, two yards — use them to split dogs up when needed. Nature at the Confluence trails are dog-friendly. Pearl Lake beach is not.</p>
+  </div>
+
+  <div class="tip-card">
+    <h4>🌧️ Rainy Day Options</h4>
+    <p>Coral Cove is fully indoors — great rain backup. Logan Museum is another. Or board games at the house.</p>
+  </div>
+
+  <div class="tip-card">
+    <h4>🃏 Pack a Game Bag</h4>
+    <p>Cards, a board game or two, a frisbee for the yard. The open slots are better with something in hand if the vibe calls for it.</p>
+  </div>
+
+  <div class="tip-card">
+    <h4>📱 Share This Page</h4>
+    <p>Works on any phone browser. Send the link to whoever needs it.</p>
+  </div>
+
+</div>
+
+<div class="vibes">Phillips &amp; Friends · South Beloit, IL · July 2025</div>
+
+<script>
+  function showTab(id, btn) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+    document.getElementById('tab-' + id).classList.add('active');
+    btn.classList.add('active');
+  }
+  function toggleDay(header) {
+    header.closest('.day-card').classList.toggle('open');
+  }
+</script>
+
+</body>
+</html>
